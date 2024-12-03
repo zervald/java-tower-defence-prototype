@@ -1,4 +1,4 @@
-package logiciel.ecran;
+package logiciel;
 
 public class Generateur {
     private int heure;

@@ -1,4 +1,4 @@
-package logiciel.ecran;
+package logiciel;
 
 public class SegmentVertical extends Segment {
     public SegmentVertical( PositionPixel depart, PositionPixel arrive ) {

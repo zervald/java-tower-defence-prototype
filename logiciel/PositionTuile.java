@@ -1,4 +1,4 @@
-package logiciel.ecran;
+package logiciel;
 
 public record PositionTuile( int x, int y ) {
     public PositionPixel positionPixel() {

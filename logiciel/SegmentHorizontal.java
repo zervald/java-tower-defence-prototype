@@ -1,4 +1,4 @@
-package logiciel.ecran;
+package logiciel;
 
 public class SegmentHorizontal extends Segment {
     public SegmentHorizontal( PositionPixel depart, PositionPixel arrive ) {

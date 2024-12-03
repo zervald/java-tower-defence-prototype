@@ -1,4 +1,4 @@
-package logiciel.ecran;
+package logiciel;
 
 import java.awt.*;
 
