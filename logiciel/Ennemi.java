@@ -14,7 +14,7 @@ public class Ennemi {
   private int pointVieMax;
 
   private Tuile image;
-  private Color effetCouleur;
+  private Color colourTmp;
   private int valeurArgent;
 
   public Ennemi(Chemin chemin, double vitesse, int pointVie, int valeurArgent, Tuile image) {
@@ -25,8 +25,6 @@ public class Ennemi {
     this.pointVieMax = pointVie;
     this.valeurArgent = valeurArgent;
     this.image = image;
-    this.effetCouleur = new Color(00000000, true);
-    this.distance = 0.0;
     this.noSegment = 0;
   }
 
@@ -40,7 +38,6 @@ public class Ennemi {
     pointVieMax = original.pointVieMax;
     valeurArgent = original.valeurArgent;
     image = original.image;
-    effetCouleur = original.effetCouleur;
   }
 
   public static int comparer(Ennemi e1, Ennemi e2) {
@@ -53,7 +50,7 @@ public class Ennemi {
   }
 
   public void reduireVitesse(int reduction) {
-    vitesse = vitesse * (1 - (reduction / 100));
+    vitesse = vitesse * (1 - (reduction / 100d));
   }
 
   public void reinitialiserVitesse() {
@@ -83,7 +80,6 @@ public class Ennemi {
     return chemin.calculerPosition(noSegment, distance);
   }
 
-  // TODO change ennemi color when frost
   public void afficher(Graphics2D g2, AffineTransform affineTransform) {
     if (noSegment < chemin.nombreSegment()) {
       AffineTransform pCurseur = (AffineTransform) affineTransform.clone();
@@ -98,5 +94,9 @@ public class Ennemi {
 
   public int getValeurArgent() {
     return valeurArgent;
+  }
+
+  public void changerCouleur(Color couleur) {
+    colourTmp = couleur;
   }
 }

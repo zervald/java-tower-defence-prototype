@@ -5,8 +5,8 @@ import java.util.List;
 
 /** TourGlace */
 public class TourGlace extends Tour {
-  public static final Tuile TOUR_BAS = new Tuile(Color.darkGray, Color.lightGray, BitMap.MUR);
-  public static final Tuile TOUR_HAUT = new Tuile(Color.cyan, Color.lightGray, BitMap.TOUR_DESSUS);
+  public static final Tuile TOUR_BAS = new Tuile(Color.blue, Color.lightGray, BitMap.MUR);
+  public static final Tuile TOUR_HAUT = new Tuile(Color.blue, Color.lightGray, BitMap.TOUR_DESSUS);
 
   private static final int NB_CARACTERISTIQUE = 2;
 
@@ -44,13 +44,28 @@ public class TourGlace extends Tour {
 
   @Override
   public int animer(List<Ennemi> ennemis) {
-    if (ennemisPrecedents != null && !ennemisPrecedents.isEmpty()) {
-      ennemisPrecedents.forEach(Ennemi::reinitialiserVitesse);
-    }
+    retirerFroid(ennemisPrecedents);
 
-    ennemis.forEach(e -> e.reduireVitesse(caracteristiques[FROID].getValeur()));
-    ennemisPrecedents = ennemis;
+    List<Ennemi> ennemisProches = getInRange(ennemis, DISTANCE);
+    appliquerFroid(ennemisProches);
+    ennemisPrecedents = ennemisProches;
 
     return 0;
+  }
+
+  private void appliquerFroid(List<Ennemi> ennemisProches) {
+    ennemisProches.stream().forEach(e -> e.reduireVitesse(caracteristiques[FROID].getValeur()));
+    ennemisProches.stream().forEach(e -> e.changerCouleur(Color.blue));
+  }
+
+  private void retirerFroid(List<Ennemi> ennemisPrecedents) {
+    if (ennemisPrecedents != null && !ennemisPrecedents.isEmpty()) {
+      try {
+        ennemisPrecedents.stream().forEach(Ennemi::reinitialiserVitesse);
+        ennemisPrecedents.stream().forEach(e -> e.changerCouleur(null));
+      } catch (Exception e) {
+        // NOTE: l'ennemi a deja atteint le chateau
+      }
+    }
   }
 }

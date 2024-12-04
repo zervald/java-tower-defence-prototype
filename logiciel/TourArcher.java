@@ -21,7 +21,7 @@ public class TourArcher extends Tour {
   private static final int[] PRIX_AUGMENTATION_NB_TIR = {40, 80};
   private static final int[] NOMBRE_PROJECTILE_PAR_TIR = {1, 2, 3};
 
-  private static final int[] PRIX_AUGMENTATION_DISTANCE = {40, 80, 120};
+  private static final int[] PRIX_AUGMENTATION_DISTANCE = {40, 80};
   private static final int[] DISTANCE_MAX_TIR_PIXEL = {24, 36, 48};
 
   {

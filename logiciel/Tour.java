@@ -2,6 +2,7 @@ package logiciel;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Tour {
@@ -57,5 +58,21 @@ public abstract class Tour {
 
   public PositionPixel getPositionPixel() {
     return position.positionPixel();
+  }
+
+  protected List<Ennemi> getInRange(List<Ennemi> ennemis, int DISTANCE) {
+    List<Ennemi> ennemisProches;
+    try {
+      ennemisProches =
+          ennemis.stream()
+              .filter(
+                  e ->
+                      caracteristiques[DISTANCE].getValeur()
+                          > e.getPositionPixel().distance(this.position.positionPixel()))
+              .toList();
+    } catch (Exception e) {
+      ennemisProches = new ArrayList<>();
+    }
+    return ennemisProches;
   }
 }
