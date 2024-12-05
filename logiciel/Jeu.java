@@ -27,33 +27,36 @@ public class Jeu extends JPanel {
   protected List<Generateur> generateurs;
   protected boolean action = false;
 
-  BiConsumer<Jeu, PositionTuile> choisirTour = (jeu, position) -> {
-    if (null != jeu.tourChoisie) {
-      jeu.tourChoisie.desinscrireEvenements(jeu.gestionSouris);
-    }
+  BiConsumer<Jeu, PositionTuile> choisirTour =
+      (jeu, position) -> {
+        if (null != jeu.tourChoisie) {
+          jeu.tourChoisie.desinscrireEvenements(jeu.gestionSouris);
+        }
 
-    int i = 0;
-    while (i < toursConstruites.size()
-        && !toursConstruites.get(i).getPositionTuile().equals(position)) {
-      ++i;
-    }
-    jeu.tourChoisie = toursConstruites.get(i);
-    jeu.tourChoisie.inscrireEvenements(jeu.gestionSouris);
-    repaint();
-  };
+        int i = 0;
+        while (i < toursConstruites.size()
+            && !toursConstruites.get(i).getPositionTuile().equals(position)) {
+          ++i;
+        }
+        jeu.tourChoisie = toursConstruites.get(i);
+        jeu.tourChoisie.inscrireEvenements(jeu.gestionSouris);
+        repaint();
+      };
 
-  BiConsumer<Jeu, PositionTuile> jouer = (jeu, position) -> {
-    if (0 < vieChateau) {
-      animateur.start();
-      action = true;
-    }
-  };
+  BiConsumer<Jeu, PositionTuile> jouer =
+      (jeu, position) -> {
+        if (0 < vieChateau) {
+          animateur.start();
+          action = true;
+        }
+      };
 
-  BiConsumer<Jeu, PositionTuile> pause = (jeu, position) -> {
-    animateur.stop();
-    action = false;
-    repaint();
-  };
+  BiConsumer<Jeu, PositionTuile> pause =
+      (jeu, position) -> {
+        animateur.stop();
+        action = false;
+        repaint();
+      };
 
   public Jeu(Dimension dimension) {
     super(true);
@@ -95,33 +98,34 @@ public class Jeu extends JPanel {
 
     this.addMouseListener(gestionSouris);
 
-    animateur = new Timer(
-        Constantes.TEMPS_TIC_MS,
-        (e) -> {
-          animerEnnemis();
-          if (vieChateau <= 0) {
-            animateur.stop();
-            action = false;
-          }
-          for (int i = 0; i < generateurs.size(); ++i) {
-            generateurs.get(i).avance();
-            if (!generateurs.get(i).estVivant()) {
-              generateurs.remove(i);
-              --i;
-            }
-          }
-          if (generateurs.size() <= 0 && ennemis.size() <= 0) {
-            animateur.stop();
-            action = false;
-          }
-          tirer();
-          repaint();
-        });
+    animateur =
+        new Timer(
+            Constantes.TEMPS_TIC_MS,
+            (e) -> {
+              animerEnnemis();
+              if (vieChateau <= 0) {
+                animateur.stop();
+                action = false;
+              }
+              for (int i = 0; i < generateurs.size(); ++i) {
+                generateurs.get(i).avance();
+                if (!generateurs.get(i).estVivant()) {
+                  generateurs.remove(i);
+                  --i;
+                }
+              }
+              if (generateurs.size() <= 0 && ennemis.size() <= 0) {
+                animateur.stop();
+                action = false;
+              }
+              tirer();
+              repaint();
+            });
 
     ennemis = new ArrayList<>();
     generateurs = niveauCourant.generateurs();
 
-    generateurs.stream().forEach((e) -> e.setParent(this));
+    generateurs.stream().forEach((g) -> g.setParent(this));
     tourChoisie = null;
     positionChoisie = null;
   }
@@ -133,15 +137,14 @@ public class Jeu extends JPanel {
   }
 
   private void animerEnnemis() {
-    for (int i = 0; i < ennemis.size(); ++i) {
-      if (!ennemis.get(i).aAtteintChateau()) {
-        ennemis.get(i).avancer();
-      } else {
+    for (Ennemi ennemi : ennemis) {
+      ennemi.avancer();
+      if (ennemi.aAtteintChateau()) {
         --vieChateau;
-        ennemis.remove(i);
-        --i;
       }
     }
+
+    ennemis.removeIf(e -> e.aAtteintChateau() || e.estMort());
     ennemis.sort(Ennemi::comparer);
   }
 

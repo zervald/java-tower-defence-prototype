@@ -72,13 +72,19 @@ public class Constantes {
 
   public static final Tuile DOLLAR =
       new Tuile(Color.darkGray, COULEUR_CARACTERES, BitMap.CAR_DOLLAR);
+
   public static final Tuile E_LAPIN = new Tuile(new Color(200, 105, 10), BitMap.LAPIN);
   public static final Tuile E_LAPIN_FROID = new Tuile(Color.blue, BitMap.LAPIN);
   public static final Tuile E_LAPIN_FEU = new Tuile(Color.red, BitMap.LAPIN);
+
   public static final Tuile E_TORTUE = new Tuile(new Color(100, 130, 32), BitMap.TORTUE);
   public static final Tuile E_TORTUE_FROID = new Tuile(Color.blue, BitMap.TORTUE);
   public static final Tuile E_TORTUE_FEU = new Tuile(Color.red, BitMap.TORTUE);
+
   public static final Tuile E_BOSS = new Tuile(new Color(150, 105, 10), BitMap.BOSS);
+  public static final Tuile E_BOSS_FROID = new Tuile(Color.blue, BitMap.BOSS);
+  public static final Tuile E_BOSS_FEU = new Tuile(Color.red, BitMap.BOSS);
+
   public static final Tuile SOUSLIGNE_TOUR = new Tuile(new Color(10, 100, 255), BitMap.SOUSLIGNE);
   public static final Tuile BOUTON_FERMER = new Tuile(Color.lightGray, BitMap.FERMER);
   public static final Tuile BOUTON_PLAY_OFF = new Tuile(Color.red, BitMap.PLAY);

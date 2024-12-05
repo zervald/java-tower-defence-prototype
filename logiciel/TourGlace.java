@@ -54,15 +54,13 @@ public class TourGlace extends Tour {
   }
 
   private void appliquerFroid(List<Ennemi> ennemisProches) {
-    ennemisProches.stream().forEach(e -> e.reduireVitesse(caracteristiques[FROID].getValeur()));
-    ennemisProches.stream().forEach(e -> e.changerCouleur(Color.blue));
+    ennemisProches.stream().forEach(e -> e.appliquerFroid(caracteristiques[FROID].getValeur()));
   }
 
   private void retirerFroid(List<Ennemi> ennemisPrecedents) {
     if (ennemisPrecedents != null && !ennemisPrecedents.isEmpty()) {
       try {
-        ennemisPrecedents.stream().forEach(Ennemi::reinitialiserVitesse);
-        ennemisPrecedents.stream().forEach(e -> e.changerCouleur(null));
+        ennemisPrecedents.stream().forEach(Ennemi::retirerFroid);
       } catch (Exception e) {
         // NOTE: l'ennemi a deja atteint le chateau
       }

@@ -5,7 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.util.List;
 
 public class TourEmplacement extends Tour {
-  private static final int NB_TOURS = 2;
+  private static final int NB_TOURS = 3;
 
   private static final DescripteurTour[] tours = new DescripteurTour[NB_TOURS];
 
@@ -14,6 +14,7 @@ public class TourEmplacement extends Tour {
         new DescripteurTour("archer", 40, TourArcher::new, Constantes.POSITION_ACHAT_TOUR_Y + 0);
     tours[1] =
         new DescripteurTour("glace", 50, TourGlace::new, Constantes.POSITION_ACHAT_TOUR_Y + 2);
+    tours[2] = new DescripteurTour("feu", 45, TourFeu::new, Constantes.POSITION_ACHAT_TOUR_Y + 4);
   }
 
   public TourEmplacement(PositionTuile position) {

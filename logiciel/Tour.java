@@ -61,17 +61,12 @@ public abstract class Tour {
   }
 
   protected List<Ennemi> getInRange(List<Ennemi> ennemis, int DISTANCE) {
-    List<Ennemi> ennemisProches;
-    try {
-      ennemisProches =
-          ennemis.stream()
-              .filter(
-                  e ->
-                      caracteristiques[DISTANCE].getValeur()
-                          > e.getPositionPixel().distance(this.position.positionPixel()))
-              .toList();
-    } catch (Exception e) {
-      ennemisProches = new ArrayList<>();
+    List<Ennemi> ennemisProches = new ArrayList<>();
+    for (Ennemi ennemi : ennemis) {
+      if (ennemi.getPositionPixel().distance(getPositionPixel())
+          < caracteristiques[DISTANCE].getValeur()) {
+        ennemisProches.add(ennemi);
+      }
     }
     return ennemisProches;
   }

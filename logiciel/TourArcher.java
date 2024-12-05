@@ -24,6 +24,8 @@ public class TourArcher extends Tour {
   private static final int[] PRIX_AUGMENTATION_DISTANCE = {40, 80};
   private static final int[] DISTANCE_MAX_TIR_PIXEL = {24, 36, 48};
 
+  private int recharge_tic = 0;
+
   {
     caracteristiques = new Caracteristique[NB_CARACTERISTIQUE];
 
@@ -43,8 +45,6 @@ public class TourArcher extends Tour {
             PRIX_AUGMENTATION_DISTANCE,
             Constantes.POSITION_CARACTERISTIQUE_Y + 4);
   }
-
-  private int recharge_tic = 0;
 
   public TourArcher(PositionTuile position) {
     super(position, TOUR_BAS, TOUR_HAUT);

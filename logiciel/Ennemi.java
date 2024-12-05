@@ -12,12 +12,30 @@ public class Ennemi {
   private double vitesse;
   private int pointVie;
   private int pointVieMax;
-
-  private Tuile image;
-  private Color colourTmp;
   private int valeurArgent;
 
-  public Ennemi(Chemin chemin, double vitesse, int pointVie, int valeurArgent, Tuile image) {
+  private static final int DOMMAGE_FEU = 0;
+  private static final int PERIODE_FEU_TIC = 5;
+  private int durationFeu;
+  private boolean estEnFeu;
+  private TourFeu sourceFeu;
+
+  private Tuile image;
+  private final Tuile image_original;
+  private final Tuile image_froid;
+  private final Tuile image_feu;
+
+  private int recharge_tic;
+
+  public Ennemi(
+      Chemin chemin,
+      double vitesse,
+      int pointVie,
+      int valeurArgent,
+      Tuile image,
+      Tuile image_froid,
+      Tuile image_feu) {
+
     this.chemin = chemin;
     this.vitesse = vitesse;
     this.VITESSE_ORIGINALE = vitesse;
@@ -25,6 +43,9 @@ public class Ennemi {
     this.pointVieMax = pointVie;
     this.valeurArgent = valeurArgent;
     this.image = image;
+    this.image_original = image;
+    this.image_froid = image_froid;
+    this.image_feu = image_feu;
     this.noSegment = 0;
   }
 
@@ -38,23 +59,64 @@ public class Ennemi {
     pointVieMax = original.pointVieMax;
     valeurArgent = original.valeurArgent;
     image = original.image;
+    image_original = original.image_original;
+    image_froid = original.image_froid;
+    image_feu = original.image_feu;
   }
 
   public static int comparer(Ennemi e1, Ennemi e2) {
     return Integer.compare(e1.distanceChateau(), e2.distanceChateau());
   }
 
-  public boolean reduireVie(int dommage) {
-    pointVie -= dommage;
+  public boolean estMort() {
     return pointVie <= 0;
   }
 
-  public void reduireVitesse(int reduction) {
-    vitesse = vitesse * (1 - (reduction / 100d));
+  /** return true if dead (pv <= 0) */
+  public boolean reduireVie(int dommage) {
+    pointVie -= dommage;
+    // System.out.println(this + " dommage de : " + dommage + " PVs: " + pointVie + "/" +
+    // pointVieMax);
+    return estMort();
   }
 
-  public void reinitialiserVitesse() {
+  public void appliquerFroid(int reduction) {
+    vitesse = vitesse * (1 - (reduction / 100d));
+    image = image_froid;
+  }
+
+  public void retirerFroid() {
     vitesse = VITESSE_ORIGINALE;
+    image = image_original;
+  }
+
+  public void appliquerFeu(int duration, TourFeu source) {
+    image = image_feu;
+    estEnFeu = true;
+    durationFeu = duration;
+    sourceFeu = source;
+  }
+
+  public void retirerFeu() {
+    image = image_original;
+    estEnFeu = false;
+    durationFeu = 0;
+    sourceFeu = null;
+  }
+
+  public boolean estEnFeu() {
+    return estEnFeu;
+  }
+
+  private void brule() {
+    if (reduireVie(DOMMAGE_FEU)) {
+      sourceFeu.transfertArgent(valeurArgent);
+    }
+
+    durationFeu--;
+    if (durationFeu <= 0) {
+      retirerFeu();
+    }
   }
 
   public boolean aAtteintChateau() {
@@ -69,6 +131,11 @@ public class Ennemi {
         distance -= longueur;
         ++noSegment;
       }
+    }
+    recharge_tic++;
+    if (estEnFeu && (PERIODE_FEU_TIC <= recharge_tic)) {
+      recharge_tic = 0;
+      brule();
     }
   }
 
@@ -94,9 +161,5 @@ public class Ennemi {
 
   public int getValeurArgent() {
     return valeurArgent;
-  }
-
-  public void changerCouleur(Color couleur) {
-    colourTmp = couleur;
   }
 }

@@ -5,7 +5,7 @@ import javax.swing.*;
 
 public class PleineEcran extends JFrame {
   public PleineEcran() throws HeadlessException {
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
 
     GraphicsDevice gDevice =
         GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -16,7 +16,7 @@ public class PleineEcran extends JFrame {
       System.err.println("Mode plein écran non supporte.");
       System.exit(-1);
     }
-    // setUndecorated( true );
+    // setUndecorated(true);
     add(new Jeu(getSize()));
   }
 }
