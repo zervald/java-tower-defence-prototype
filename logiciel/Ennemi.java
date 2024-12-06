@@ -17,13 +17,13 @@ public class Ennemi {
   private static final int DOMMAGE_FEU = 0;
   private static final int PERIODE_FEU_TIC = 5;
   private int durationFeu;
-  private boolean estEnFeu;
   private TourFeu sourceFeu;
+  private boolean estEnFeu;
+  private boolean estFroid;
 
-  private Tuile image;
-  private final Tuile image_original;
-  private final Tuile image_froid;
-  private final Tuile image_feu;
+  private final Tuile IMAGE_ORIGINAL;
+  private final Tuile IMAGE_FROID;
+  private final Tuile IMAGE_FEU;
 
   private int recharge_tic;
 
@@ -42,10 +42,9 @@ public class Ennemi {
     this.pointVie = pointVie;
     this.pointVieMax = pointVie;
     this.valeurArgent = valeurArgent;
-    this.image = image;
-    this.image_original = image;
-    this.image_froid = image_froid;
-    this.image_feu = image_feu;
+    this.IMAGE_ORIGINAL = image;
+    this.IMAGE_FROID = image_froid;
+    this.IMAGE_FEU = image_feu;
     this.noSegment = 0;
   }
 
@@ -58,14 +57,21 @@ public class Ennemi {
     pointVie = original.pointVie;
     pointVieMax = original.pointVieMax;
     valeurArgent = original.valeurArgent;
-    image = original.image;
-    image_original = original.image_original;
-    image_froid = original.image_froid;
-    image_feu = original.image_feu;
+    IMAGE_ORIGINAL = original.IMAGE_ORIGINAL;
+    IMAGE_FROID = original.IMAGE_FROID;
+    IMAGE_FEU = original.IMAGE_FEU;
   }
 
   public static int comparer(Ennemi e1, Ennemi e2) {
     return Integer.compare(e1.distanceChateau(), e2.distanceChateau());
+  }
+
+  public int getValeurArgent() {
+    return valeurArgent;
+  }
+
+  public boolean estEnFeu() {
+    return estEnFeu;
   }
 
   public boolean estMort() {
@@ -80,47 +86,16 @@ public class Ennemi {
     return estMort();
   }
 
-  public void appliquerFroid(int reduction) {
-    vitesse = vitesse * (1 - (reduction / 100d));
-    image = image_froid;
-  }
-
-  public void retirerFroid() {
-    vitesse = VITESSE_ORIGINALE;
-    image = image_original;
-  }
-
-  public void appliquerFeu(int duration, TourFeu source) {
-    image = image_feu;
-    estEnFeu = true;
-    durationFeu = duration;
-    sourceFeu = source;
-  }
-
-  public void retirerFeu() {
-    image = image_original;
-    estEnFeu = false;
-    durationFeu = 0;
-    sourceFeu = null;
-  }
-
-  public boolean estEnFeu() {
-    return estEnFeu;
-  }
-
-  private void brule() {
-    if (reduireVie(DOMMAGE_FEU)) {
-      sourceFeu.transfertArgent(valeurArgent);
-    }
-
-    durationFeu--;
-    if (durationFeu <= 0) {
-      retirerFeu();
-    }
-  }
-
   public boolean aAtteintChateau() {
     return chemin.nombreSegment() <= noSegment;
+  }
+
+  public int distanceChateau() {
+    return chemin.getLongueur() - ((int) distance);
+  }
+
+  public PositionPixel getPositionPixel() {
+    return chemin.calculerPosition(noSegment, distance);
   }
 
   public void avancer() {
@@ -139,15 +114,82 @@ public class Ennemi {
     }
   }
 
-  public int distanceChateau() {
-    return chemin.getLongueur() - ((int) distance);
+  /**
+   * Crée un effet de "froid" sur l'ennemi.
+   *
+   * <p>Cet effet ralenti sa vitesse et change sa couleur pour un bleu. L'effet de reduction sur la
+   * vitesse est cumulatif.
+   *
+   * @param reduction % de reduction sur la vitesse courante.
+   */
+  public void appliquerFroid(int reduction) {
+    vitesse = vitesse * (1 - (reduction / 100d));
+    estFroid = true;
   }
 
-  public PositionPixel getPositionPixel() {
-    return chemin.calculerPosition(noSegment, distance);
+  /** Retourne l'ennemi à sa vitesse et couleur originiale. */
+  public void retirerFroid() {
+    vitesse = VITESSE_ORIGINALE;
+    estFroid = false;
+  }
+
+  /**
+   * Crée un effet de feu sur l'ennemi.
+   *
+   * <p>L'effet retire des pv périodiquements pour une durée déterminé. Cette méthode change aussi
+   * la couleur de l'ennemi pour un rouge. Si l'ennemi meurt de cet effet, sa valeur en argent est
+   * transférée à la tour passée en paramètre.
+   *
+   * @param duration en tic. Les pv sont retirés à chaque tic.
+   * @param source tour de feu ayant appliqué l'effet.
+   * @see #brule()
+   */
+  public void appliquerFeu(int duration, TourFeu source) {
+    estEnFeu = true;
+    durationFeu = duration;
+    sourceFeu = source;
+  }
+
+  /** Éteind l'effet de feu de l'ennemi. */
+  public void retirerFeu() {
+    estEnFeu = false;
+    durationFeu = 0;
+    sourceFeu = null;
+  }
+
+  /**
+   * Brule l'ennemi avec l'effet de feu.
+   *
+   * <p>Doit être appellé seulement lorsque l'enenmi est en feu.
+   *
+   * @throws IllegalStateException lorsque l'ennemi n'est pas correctement en feu.
+   */
+  private void brule() {
+    if (estEnFeu && (sourceFeu != null) && durationFeu > 0) {
+      // Si reduire la vie tue l'ennemi, transfert argent.
+      if (reduireVie(DOMMAGE_FEU)) {
+        sourceFeu.transfertArgent(valeurArgent);
+      }
+
+      durationFeu--;
+      if (durationFeu <= 0) {
+        retirerFeu();
+      }
+    } else {
+      throw new IllegalStateException("Essayer de bruler un ennemi qui n'est pas en feu");
+    }
   }
 
   public void afficher(Graphics2D g2, AffineTransform affineTransform) {
+    Tuile image;
+    if (estEnFeu) {
+      image = IMAGE_FEU;
+    } else if (estFroid) {
+      image = IMAGE_FROID;
+    } else {
+      image = IMAGE_ORIGINAL;
+    }
+
     if (noSegment < chemin.nombreSegment()) {
       AffineTransform pCurseur = (AffineTransform) affineTransform.clone();
       PositionPixel position = getPositionPixel();
@@ -157,9 +199,5 @@ public class Ennemi {
       int rPV = (pointVie * Constantes.FACTEUR_PV) / pointVieMax;
       g2.drawImage(Constantes.PV_ENNEMI[rPV], pCurseur, null);
     }
-  }
-
-  public int getValeurArgent() {
-    return valeurArgent;
   }
 }

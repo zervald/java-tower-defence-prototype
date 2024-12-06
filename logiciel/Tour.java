@@ -60,7 +60,15 @@ public abstract class Tour {
     return position.positionPixel();
   }
 
-  protected List<Ennemi> getInRange(List<Ennemi> ennemis, int DISTANCE) {
+  /**
+   * Calcule les ennemis qui sont à portée de la tour.
+   *
+   * @param ennemis List d'ennemis présent dans le jeu.
+   * @param DISTANCE maximale en "pixel" où un ennemi est considéré à portée.
+   * @return List des ennemis à portée de la tour. La liste retourner peut être vide, mais jamais
+   *     null.
+   */
+  protected List<Ennemi> estAPortee(List<Ennemi> ennemis, int DISTANCE) {
     List<Ennemi> ennemisProches = new ArrayList<>();
     for (Ennemi ennemi : ennemis) {
       if (ennemi.getPositionPixel().distance(getPositionPixel())

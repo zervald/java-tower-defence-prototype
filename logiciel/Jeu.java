@@ -136,6 +136,7 @@ public class Jeu extends JPanel {
     }
   }
 
+  /** Modifié: Maintenant les ennemis au chateau OU MORT à la fin d'un tic sont retirés du jeu. */
   private void animerEnnemis() {
     for (Ennemi ennemi : ennemis) {
       ennemi.avancer();
